@@ -87,8 +87,12 @@ func NewFromDefault(logstashEndpoint string) *LogstashForwarderConfig {
 // NewFromContainer returns a new config based on /etc/logstash-forwarder.conf within the container,
 // if it exists.
 func NewFromContainer(container *docker.Container) (*LogstashForwarderConfig, error) {
-	config, err := NewFromFile(calculateFilePath(container, "/etc/logstash-forwarder.conf"))
+	confPath := calculateFilePath(container, "/etc/logstash-forwarder.conf")
+	log.Printf("Checking for logstash-forwarder config in %s", confPath)
+
+	config, err := NewFromFile(confPath)
 	if err != nil {
+		log.Printf("No logstash-forwarder config found in %s", container.ID)
 		return nil, err
 	}
 	log.Printf("Found logstash-forwarder config in %s", container.ID)
@@ -110,11 +114,15 @@ func calculateFilePath(container *docker.Container, path string) string {
 	}
 
 	var prefix = "/var/lib/docker/"
+	var suffix = ""
 	switch container.Driver {
 	case "aufs":
 		prefix += "aufs/mnt"
+	case "devicemapper":
+		prefix += "devicemapper/mnt"
+		suffix = "/rootfs"
 	default:
 		prefix += "btrfs/subvolumes"
 	}
-	return fmt.Sprintf("%s/%s%s", prefix, container.ID, path)
+	return fmt.Sprintf("%s/%s%s%s", prefix, container.ID, suffix, path)
 }
