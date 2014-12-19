@@ -85,7 +85,7 @@ coreos:
       content: |
         [Unit]
         Description=Logstash Forwarder
-        Documentation=https://github.com/digital-wonderland/docker-logstash-forwarder
+        Documentation=https://github.com/odysseyscience/docker-logstash-forwarder
         After=docker.service
         Requires=logstash.service
 

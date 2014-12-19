@@ -10,6 +10,6 @@ RUN yum install -y epel-release \
 
 RUN go get github.com/elasticsearch/logstash-forwarder \
  && go get github.com/tools/godep \
- && godep get github.com/digital-wonderland/docker-logstash-forwarder
+ && godep get github.com/odysseyscience/docker-logstash-forwarder
 
 ENTRYPOINT ["/var/lib/golang/bin/docker-logstash-forwarder"]
